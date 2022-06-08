@@ -1,0 +1,174 @@
+CREATE TABLE dit2122_countries(
+	country_id SERIAL NOT NULL PRIMARY KEY,
+	country_codes VARCHAR(50),
+	countries VARCHAR(80)
+	);
+
+
+CREATE TABLE dit2122_provider(
+	providerID SMALLSERIAL NOT NULL PRIMARY KEY,
+	service_provider VARCHAR(80));
+
+
+CREATE TABLE dit2122_jurisdiction(
+	jurisdiction_id SMALLSERIAL NOT NULL PRIMARY KEY,  
+	jurisdiction VARCHAR(50),
+	jurisdiction_description VARCHAR(100));
+
+
+CREATE TABLE dit2122_entity_status(
+	status_id SERIAL NOT NULL PRIMARY KEY,
+	status VARCHAR(80));
+ 
+
+CREATE TABLE dit2122_intermediary_status(
+	inter_status_id SERIAL NOT NULL PRIMARY KEY,
+	inter_status VARCHAR(80));
+
+CREATE TABLE dit2122_source(
+	table_source_id SERIAL NOT NULL PRIMARY KEY,
+	source_id VARCHAR(60));
+	
+CREATE TABLE dit2122_valid_until(
+	table_valid_until_id SERIAL NOT NULL PRIMARY KEY,
+	valid_until varchar(80));
+
+-- Creating dit2122_address Table with assertion for unique values in a specific range
+
+CREATE TABLE IF NOT EXISTS dit2122_address
+(
+	address_id integer NOT NULL PRIMARY KEY CHECK (address_id BETWEEN 14000001 AND 14999999),
+	name VARCHAR(150),
+	address varchar(700),
+	country_id INT,
+	table_source_id integer,
+	table_valid_until_id integer,	
+	note varchar(150)
+);
+
+
+ALTER TABLE dit2122_address ADD CONSTRAINT country_id FOREIGN KEY (country_id) REFERENCES dit2122_countries(country_id);
+ALTER TABLE dit2122_address ADD CONSTRAINT table_source_id FOREIGN KEY (table_source_id) REFERENCES dit2122_source(table_source_id);
+ALTER TABLE dit2122_address ADD CONSTRAINT table_valid_until_id FOREIGN KEY (table_valid_until_id) REFERENCES dit2122_valid_until(table_valid_until_id);
+
+-- Creating dit2122_entity Table with assertion for unique values in a specific range
+
+CREATE TABLE IF NOT EXISTS dit2122_entity
+(
+	entity_id integer NOT NULL PRIMARY KEY CHECK (entity_id BETWEEN 10000001 AND 10999999),
+	name VARCHAR(180) NOT NULL,
+	jurisdiction_id integer,
+	country_id integer,
+	incorporation_date DATE,
+	inactivation_date DATE,
+	struck_off_date DATE,
+	closed_date DATE,
+	ibcRUC TEXT,
+	status_id integer,
+	company_type VARCHAR(150),
+	providerid SMALLINT,
+	table_source_id integer,
+	table_valid_until_id integer,
+	note varchar(900)
+);
+
+
+
+ALTER TABLE dit2122_entity ADD CONSTRAINT jurisdiction_ID FOREIGN KEY (jurisdiction_id) REFERENCES dit2122_jurisdiction(jurisdiction_id);
+ALTER TABLE dit2122_entity ADD CONSTRAINT country_id FOREIGN KEY (country_id) REFERENCES dit2122_countries(country_id);
+ALTER TABLE dit2122_entity ADD CONSTRAINT providerid FOREIGN KEY (providerid) REFERENCES dit2122_provider(providerid);
+ALTER TABLE dit2122_entity ADD CONSTRAINT status_id FOREIGN KEY (status_id) REFERENCES dit2122_entity_status(status_id);
+ALTER TABLE dit2122_entity ADD CONSTRAINT table_source_id FOREIGN KEY (table_source_id) REFERENCES dit2122_source(table_source_id);
+ALTER TABLE dit2122_entity ADD CONSTRAINT table_valid_until_id FOREIGN KEY (table_valid_until_id) REFERENCES dit2122_valid_until(table_valid_until_id);
+
+-- Creating dit2122_officer Table with assertion for unique values in a specific range
+
+CREATE TABLE IF NOT EXISTS dit2122_officer
+(
+	officer_id integer NOT NULL PRIMARY KEY CHECK(officer_id BETWEEN 12000000 AND 14000000 OR officer_id > 15000000),
+	name VARCHAR(300) NOT NULL,
+	country_id INT,
+	table_source_id INTEGER,
+	table_valid_until_id INTEGER,
+	note varchar(1100)
+);
+
+
+ALTER TABLE dit2122_officer ADD CONSTRAINT country_id FOREIGN KEY (country_id) REFERENCES dit2122_countries(country_id);
+ALTER TABLE dit2122_officer ADD CONSTRAINT table_source_id FOREIGN KEY (table_source_id) REFERENCES dit2122_source(table_source_id);
+ALTER TABLE dit2122_officer ADD CONSTRAINT table_valid_until_id FOREIGN KEY (table_valid_until_id) REFERENCES dit2122_valid_until(table_valid_until_id);
+
+-- Creating dit2122_intermediary Table with assertion for unique values in a specific range
+
+
+CREATE TABLE IF NOT EXISTS dit2122_intermediary
+(
+	intermediary_id integer NOT NULL PRIMARY KEY CHECK (intermediary_id BETWEEN 11000001 AND 11999999),
+	name VARCHAR(200) NOT NULL,
+	country_id INTEGER,
+	status_id VARCHAR(200),
+	table_source_id INTEGER,
+	table_valid_until_id INTEGER,
+	note VARCHAR(700)
+);
+
+
+ALTER TABLE dit2122_intermediary ADD CONSTRAINT country_id FOREIGN KEY (country_id) REFERENCES dit2122_countries(country_id);
+ALTER TABLE dit2122_intermediary ADD CONSTRAINT table_source_id FOREIGN KEY (table_source_id) REFERENCES dit2122_source(table_source_id);
+ALTER TABLE dit2122_intermediary ADD CONSTRAINT table_valid_until_id FOREIGN KEY (table_valid_until_id) REFERENCES dit2122_valid_until(table_valid_until_id);
+
+
+CREATE TABLE dit2122_entity_address(
+	entity_address_id SERIAL NOT NULL PRIMARY KEY,
+	entity_id integer NOT NULL,
+	address_id integer NOT NULL,
+	type VARCHAR(150),
+	link VARCHAR(150),
+	start_date DATE,
+	end_date DATE
+	);
+	
+
+ALTER TABLE dit2122_entity_address ADD CONSTRAINT entity_id FOREIGN KEY (entity_id) REFERENCES dit2122_entity(entity_id);
+ALTER TABLE dit2122_entity_address ADD CONSTRAINT address_id FOREIGN KEY (address_id) REFERENCES dit2122_address(address_id);
+
+CREATE TABLE dit2122_intermediary_entity(
+	inter_entity_id SERIAL NOT NULL PRIMARY KEY,
+	intermediary_id integer NOT NULL,
+	entity_id integer NOT NULL,
+	type VARCHAR(80),
+	link VARCHAR(90),
+	start_date DATE,
+	end_date DATE
+	);
+
+ALTER TABLE dit2122_intermediary_entity ADD CONSTRAINT intermediary_id FOREIGN KEY (intermediary_id) REFERENCES dit2122_intermediary(intermediary_id);
+ALTER TABLE dit2122_intermediary_entity ADD CONSTRAINT entity_id FOREIGN KEY (entity_id) REFERENCES dit2122_entity(entity_id);
+
+
+CREATE TABLE dit2122_officer_entity(
+	officer_entity_id SERIAL NOT NULL PRIMARY KEY,
+	officer_id integer NOT NULL,
+	entity_id integer NOT NULL,
+	type VARCHAR(80),
+	link VARCHAR(90),
+	start_date DATE,
+	end_date DATE
+	);
+
+ALTER TABLE dit2122_officer_entity ADD CONSTRAINT officer_id FOREIGN KEY (officer_id) REFERENCES dit2122_officer(officer_id);
+ALTER TABLE dit2122_officer_entity ADD CONSTRAINT entity_id FOREIGN KEY (entity_id) REFERENCES dit2122_entity(entity_id);
+
+CREATE TABLE dit2122_officer_address(
+	officer_address_id SERIAL NOT NULL PRIMARY KEY,
+	officer_id integer NOT NULL,
+	address_id integer NOT NULL,
+	type VARCHAR(80),
+	link VARCHAR(90),
+	start_date DATE,
+	end_date DATE
+	);
+
+
+ALTER TABLE dit2122_officer_address ADD CONSTRAINT officer_id FOREIGN KEY (officer_id) REFERENCES dit2122_officer(officer_id);
+ALTER TABLE dit2122_officer_address ADD CONSTRAINT address_id FOREIGN KEY (address_id) REFERENCES dit2122_address(address_id);

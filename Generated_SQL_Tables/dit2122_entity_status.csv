@@ -1,0 +1,19 @@
+status_id,status
+1,Defaulted
+2,Changed agent
+3,Active
+4,Inactivated
+5,Relocated in new jurisdiction
+6,Dissolved shelf company
+7,Dissolved
+8,Bad debt account
+9,Discontinued
+10,Resigned as agent
+11,Trash company
+12,Shelf company
+13,Shelf company not possible to sell
+14,In transition
+15,Change in administration pending
+16,In liquidation
+17,
+18,Resigned as agent of shelf company

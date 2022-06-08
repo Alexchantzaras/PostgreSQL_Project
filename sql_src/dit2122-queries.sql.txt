@@ -1,0 +1,35 @@
+--QUERY 1
+SELECT COUNT(*)  AS "Total_Entities"
+FROM "dit2122_entity";
+
+--QUERY 2
+SELECT dit2122_countries.countries
+FROM dit2122_countries
+JOIN dit2122_officer ON dit2122_officer.country_id = dit2122_countries.country_id
+GROUP BY  dit2122_countries.country_id
+ORDER BY COUNT(officer_id) DESC 
+LIMIT 20;
+
+
+--QUERY 3
+SELECT dit2122_officer.officer_id,dit2122_officer.name,dit2122_address.address
+FROM "dit2122_countries"
+JOIN dit2122_officer ON dit2122_officer.country_id = dit2122_countries.country_id
+JOIN dit2122_officer_address ON dit2122_officer_address.officer_id = dit2122_officer.officer_id
+JOIN dit2122_address ON dit2122_officer_address.address_id = dit2122_address.address_id
+WHERE countries LIKE '%Greece%'
+
+
+--QUERY 4
+BEGIN;
+
+-- delete the address of a specific officer
+DELETE FROM dit2122_officer_entity
+WHERE officer_id = '12000128';
+
+
+-- insert new values for this officer
+INSERT INTO dit2122_officer_entity(officer_id, entity_id, type, link,start_date,end_date)
+VALUES (15123456, 10033363 , 'omada_of' , 'no connection', NULL, NULL);
+
+COMMIT;
